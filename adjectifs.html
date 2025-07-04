@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice Infini - Identifier les adjectifs</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+		#re{
+			color:red;
+		}
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .phrase-container {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #f1f8fe;
+            border-radius: 8px;
+            border-left: 5px solid #3498db;
+        }
+        .phrase {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        .reponse-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            flex-grow: 1;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button#nouveau-btn {
+            background-color: #2ecc71;
+        }
+        button#nouveau-btn:hover {
+            background-color: #27ae60;
+        }
+        .resultat {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .correct {
+            background-color: #e6ffed;
+            border-left: 5px solid #2ecc71;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-left: 5px solid #e74c3c;
+        }
+        .explication {
+            font-style: italic;
+            margin-top: 10px;
+            color: #555;
+        }
+        .adjectif-attendu {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .score-container {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #3498db;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        .highlight {
+            background-color: #fffde7;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Exercice Infini - Identifier les <span id="re">adjectifs</span></h1>
+    
+    <div class="container">
+        <div class="score-container">
+            Bonnes réponses: <span id="score">0</span>/<span id="total">0</span>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        
+        <div id="exercice-container"></div>
+        
+        <div class="buttons">
+            <button id="corriger-btn">Corriger</button>
+            <button id="nouveau-btn">Nouvel exercice</button>
+        </div>
+    </div>
+
+    <script>
+        const mots = {
+            sujets: [
+                {masculin: "Le chien", feminin: "La chienne"},
+                {masculin: "Le chat", feminin: "La chatte"},
+                {masculin: "L'oiseau", feminin: "L'oiseau"},
+                {masculin: "L'écureuil", feminin: "L'écureuil"},
+                {masculin: "Le livre", feminin: "La livre"},
+                {masculin: "Le jardin", feminin: "La jardinière"},
+                {masculin: "Le professeur", feminin: "La professeure"},
+                {masculin: "L'étudiant", feminin: "L'étudiante"},
+                {masculin: "Le restaurant", feminin: "La restauration"},
+                {masculin: "Le film", feminin: "La scène"},
+                {masculin: "Le tableau", feminin: "La toile"},
+                {masculin: "L'arbre", feminin: "La branche"},
+                {masculin: "Le nuage", feminin: "La nuée"},
+                {masculin: "Le lac", feminin: "La rivière"}
+            ],
+            adjectifs: [
+                {masculin: "grand", feminin: "grande"},
+                {masculin: "petit", feminin: "petite"},
+                {masculin: "beau", feminin: "belle"},
+                {masculin: "laid", feminin: "laide"},
+                {masculin: "jeune", feminin: "jeune"},
+                {masculin: "vieux", feminin: "vieille"},
+                {masculin: "nouveau", feminin: "nouvelle"},
+                {masculin: "rapide", feminin: "rapide"},
+                {masculin: "lent", feminin: "lente"},
+                {masculin: "fort", feminin: "forte"},
+                {masculin: "faible", feminin: "faible"},
+                {masculin: "intelligent", feminin: "intelligente"},
+                {masculin: "gentil", feminin: "gentille"},
+                {masculin: "méchant", feminin: "méchante"},
+                {masculin: "heureux", feminin: "heureuse"},
+                {masculin: "triste", feminin: "triste"},
+                {masculin: "calme", feminin: "calme"},
+                {masculin: "bruyant", feminin: "bruyante"},
+                {masculin: "propre", feminin: "propre"},
+                {masculin: "sale", feminin: "sale"},
+                {masculin: "chaud", feminin: "chaude"},
+                {masculin: "froid", feminin: "froide"},
+                {masculin: "doux", feminin: "douce"},
+                {masculin: "dur", feminin: "dure"},
+                {masculin: "léger", feminin: "légère"},
+                {masculin: "lourd", feminin: "lourde"},
+                {masculin: "clair", feminin: "claire"},
+                {masculin: "sombre", feminin: "sombre"},
+                {masculin: "rouge", feminin: "rouge"},
+                {masculin: "bleu", feminin: "bleue"},
+                {masculin: "vert", feminin: "verte"},
+                {masculin: "jaune", feminin: "jaune"},
+                {masculin: "noir", feminin: "noire"},
+                {masculin: "blanc", feminin: "blanche"},
+                {masculin: "rond", feminin: "ronde"},
+                {masculin: "carré", feminin: "carrée"},
+                {masculin: "magique", feminin: "magique"},
+                {masculin: "mystérieux", feminin: "mystérieuse"}
+            ],
+            verbes: [
+                "court", "saute", "mange", "boit", "dort", "lit", 
+                "écrit", "peint", "chante", "joue", "travaille", 
+                "étudie", "parle", "écoute", "regarde", "construit",
+                "vole", "nage", "grimpe", "pousse", "brille", "tourne"
+            ],
+            complements: [
+                "dans le jardin", "sur la table", "sous l'arbre", 
+                "devant la maison", "derrière le mur", "à l'école", 
+                "au parc", "dans la forêt", "sous la pluie", 
+                "au soleil", "avec enthousiasme", "avec précaution",
+                "pendant la nuit", "toute la journée", "sans raison"
+            ]
+        };
+
+        const config = {
+            nbAdjectifsMin: 1,
+            nbAdjectifsMax: 3,
+            score: 0,
+            total: 0
+        };
+
+        function randomItem(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function arraysEqual(a, b) {
+            if (a === b) return true;
+            if (a == null || b == null) return false;
+            if (a.length !== b.length) return false;
+
+            for (let i = 0; i < a.length; ++i) {
+                if (a[i] !== b[i]) return false;
+            }
+            return true;
+        }
+
+        function genererPhrase() {
+            const sujet = randomItem(mots.sujets);
+            const estFeminin = Math.random() > 0.5;
+            const sujetTexte = estFeminin ? sujet.feminin : sujet.masculin;
+            const verbe = randomItem(mots.verbes);
+            const complement = randomItem(mots.complements);
+            
+            const nbAdjectifs = randomInt(config.nbAdjectifsMin, config.nbAdjectifsMax);
+            const adjectifs = [];
+            const adjectifsTexte = [];
+            
+            for (let i = 0; i < nbAdjectifs; i++) {
+                let adj;
+                do {
+                    adj = randomItem(mots.adjectifs);
+                } while (adjectifs.includes(adj.masculin));
+                
+                adjectifs.push(adj.masculin);
+                adjectifsTexte.push(estFeminin ? adj.feminin : adj.masculin);
+            }
+            
+            let phrase = `${sujetTexte} ${adjectifsTexte.join(' ')} ${verbe} ${complement}`;
+            phrase = phrase.replace(/\s+/g, ' ').trim();
+            
+            return {
+                phrase: phrase,
+                adjectifs: adjectifs,
+                explication: `Les adjectifs qualifient le sujet "${sujetTexte}".`
+            };
+        }
+
+        function afficherNouvelExercice() {
+            const exercice = genererPhrase();
+            const container = document.getElementById('exercice-container');
+            
+            container.innerHTML = `
+                <div class="phrase-container">
+                    <div class="phrase">${exercice.phrase}</div>
+                    <p>Réécrivez tous les adjectifs dans la phrase au masculin singulier (séparez-les par des virgules) :</p>
+                    <input type="text" class="reponse-input" id="reponse" placeholder="Exemple: grand, beau, rapide">
+                    <div class="resultat" id="resultat"></div>
+                </div>
+            `;
+            
+            container.dataset.adjectifs = JSON.stringify(exercice.adjectifs);
+            container.dataset.explication = exercice.explication;
+            
+            document.getElementById('reponse').focus();
+        }
+
+        function corrigerExercice() {
+            const container = document.getElementById('exercice-container');
+            const adjectifs = JSON.parse(container.dataset.adjectifs);
+            const reponse = document.getElementById('reponse').value.toLowerCase();
+            const reponsesUtilisateur = reponse.split(',').map(item => item.trim()).filter(item => item);
+            
+            const resultatDiv = document.getElementById('resultat');
+            resultatDiv.style.display = 'block';
+            
+            config.total++;
+            document.getElementById('total').textContent = config.total;
+            
+            const correct = arraysEqual(adjectifs.sort(), reponsesUtilisateur.sort());
+            
+            if (correct) {
+                resultatDiv.className = 'resultat correct';
+                resultatDiv.innerHTML = '<strong>✓ Correct!</strong>';
+                config.score++;
+                document.getElementById('score').textContent = config.score;
+            } else {
+                resultatDiv.className = 'resultat incorrect';
+                resultatDiv.innerHTML = `
+                    <strong>✗ Incorrect.</strong>
+                    <div class="explication">${container.dataset.explication}</div>
+                    <div>Adjectifs attendus: <span class="adjectif-attendu">${adjectifs.join(', ')}</span></div>
+                `;
+            }
+            
+            updateProgressBar();
+            highlightAdjectives(adjectifs);
+        }
+
+        function highlightAdjectives(adjectifs) {
+            const phraseDiv = document.querySelector('.phrase');
+            let phraseText = phraseDiv.textContent;
+            
+            adjectifs.forEach(adj => {
+                const regex = new RegExp(`\\b${adj}\\b`, 'gi');
+                phraseText = phraseText.replace(regex, match => 
+                    `<span class="highlight">${match}</span>`
+                );
+            });
+            
+            phraseDiv.innerHTML = phraseText;
+        }
+
+        function updateProgressBar() {
+            const progress = config.total > 0 ? (config.score / config.total) * 100 : 0;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+
+        document.getElementById('corriger-btn').addEventListener('click', corrigerExercice);
+        document.getElementById('nouveau-btn').addEventListener('click', afficherNouvelExercice);
+        
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                corrigerExercice();
+            }
+        });
+
+        afficherNouvelExercice();
+    </script>
+</body>
+</html>

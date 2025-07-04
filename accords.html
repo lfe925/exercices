@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice d'accord des déterminants</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .exercise-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .sentence {
+            font-size: 1.2em;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        input {
+            padding: 8px;
+            margin: 0 5px;
+            width: 60px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .score {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .explanation {
+            font-style: italic;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Accord des déterminants</h1>
+    <p>Complétez les phrases avec les déterminants appropriés (articles définis, indéfinis, démonstratifs, possessifs).</p>
+    
+    <div class="exercise-container">
+        <div id="exercise"></div>
+        <button id="check-answers">Vérifier les réponses</button> <button id="rel1">Question suivante</button>
+        <div id="feedback" class="feedback"></div>
+        <div id="score" class="score"></div>
+    </div>
+
+    <script>
+        // Liste de phrases avec des déterminants manquants
+        const sentences = [
+            { 
+                text: "[DÉTERMINANT] enfant joue avec [DÉTERMINANT] ballon dans [DÉTERMINANT] jardin.", 
+                answers: ["L'", "un", "le"], 
+                gender: ["m", "m", "m"],
+                explanation: "'enfant' est masculin, donc 'le' ou 'l'' devant une voyelle. 'ballon' est masculin, donc 'un'. 'jardin' est masculin, donc 'le'."
+            },
+            { 
+                text: "[DÉTERMINANT] oiseau chante sur [DÉTERMINANT] branche de [DÉTERMINANT] arbre.", 
+                answers: ["L'", "une", "l'"], 
+                gender: ["m", "f", "m"],
+                explanation: "'oiseau' est masculin, donc 'l'' devant une voyelle. 'branche' est féminin, donc 'une'. 'arbre' est masculin, donc 'l'' devant une voyelle."
+            },
+            { 
+                text: "[DÉTERMINANT] amie a offert [DÉTERMINANT] livre à [DÉTERMINANT] professeur.", 
+                answers: ["Une", "un", "le"], 
+                gender: ["f", "m", "m"],
+                explanation: "'amie' est féminin, donc 'une'. 'livre' est masculin, donc 'un'. 'professeur' peut être masculin ou féminin, ici on utilise 'le' comme exemple."
+            },
+            { 
+                text: "Je cherche [DÉTERMINANT] clés qui étaient sur [DÉTERMINANT] table près de [DÉTERMINANT] fenêtre.", 
+                answers: ["les", "la", "la"], 
+                gender: ["f", "f", "f"],
+                explanation: "'clés' est féminin pluriel, donc 'les'. 'table' est féminin, donc 'la'. 'fenêtre' est féminin, donc 'la'."
+            },
+            { 
+                text: "[DÉTERMINANT] homme porte [DÉTERMINANT] chapeau et [DÉTERMINANT] écharpe.", 
+                answers: ["L'", "un", "une"], 
+                gender: ["m", "m", "f"],
+                explanation: "'homme' est masculin, donc 'l'' devant une voyelle. 'chapeau' est masculin, donc 'un'. 'écharpe' est féminin, donc 'une'."
+            }
+        ];
+
+        // Sélection aléatoire d'une phrase
+        let currentExercise;
+        let userAnswers = [];
+        
+        function generateExercise() {
+            const exerciseDiv = document.getElementById('exercise');
+            exerciseDiv.innerHTML = '';
+            
+            // Choisir une phrase aléatoire
+            currentExercise = sentences[Math.floor(Math.random() * sentences.length)];
+            
+            // Diviser la phrase en parties
+            const parts = currentExercise.text.split('[DÉTERMINANT]');
+            
+            // Construire l'exercice avec des inputs
+            for (let i = 0; i < parts.length; i++) {
+                if (i > 0) {
+                    // Ajouter un input pour le déterminant
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.dataset.index = i - 1;
+                    input.placeholder = 'déterminant';
+                    exerciseDiv.appendChild(input);
+                }
+                // Ajouter le texte de la phrase
+                if (parts[i]) {
+                    const span = document.createElement('span');
+                    span.textContent = parts[i];
+                    exerciseDiv.appendChild(span);
+                }
+            }
+            
+            // Réinitialiser les feedbacks
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('score').textContent = '';
+            userAnswers = [];
+        }
+
+        // Vérifier les réponses
+        document.getElementById('check-answers').addEventListener('click', function() {
+            const inputs = document.querySelectorAll('#exercise input');
+            const feedbackDiv = document.getElementById('feedback');
+            let correctCount = 0;
+            
+            userAnswers = [];
+            feedbackDiv.innerHTML = '';
+            
+            inputs.forEach((input, index) => {
+                const userAnswer = input.value.trim();
+                const correctAnswer = currentExercise.answers[index];
+                const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+                
+                userAnswers.push({
+                    answer: userAnswer,
+                    correct: isCorrect,
+                    expected: correctAnswer
+                });
+                
+                if (isCorrect) {
+                    correctCount++;
+                    input.style.borderColor = '#28a745';
+                } else {
+                    input.style.borderColor = '#dc3545';
+                }
+            });
+            
+            // Afficher le feedback
+            if (correctCount === inputs.length) {
+                feedbackDiv.className = 'feedback correct';
+                feedbackDiv.textContent = 'Bravo ! Toutes vos réponses sont correctes.';
+            } else {
+                feedbackDiv.className = 'feedback incorrect';
+                feedbackDiv.innerHTML = `Vous avez ${correctCount} bonne(s) réponse(s) sur ${inputs.length}.`;
+                
+                // Ajouter des explications pour les erreurs
+                const explanationDiv = document.createElement('div');
+                explanationDiv.className = 'explanation';
+                explanationDiv.textContent = currentExercise.explanation;
+                feedbackDiv.appendChild(explanationDiv);
+                
+                // Afficher les corrections
+                const correctionsDiv = document.createElement('div');
+                correctionsDiv.style.marginTop = '10px';
+                correctionsDiv.innerHTML = '<strong>Corrections :</strong><br>';
+                
+                userAnswers.forEach((answer, index) => {
+                    if (!answer.correct) {
+                        correctionsDiv.innerHTML += `Position ${index + 1}: Vous avez mis "${answer.answer}", il fallait "${answer.expected}"<br>`;
+                    }
+                });
+                
+                feedbackDiv.appendChild(correctionsDiv);
+            }
+            
+            feedbackDiv.style.display = 'block';
+            document.getElementById('score').textContent = `Score: ${correctCount}/${inputs.length}`;
+        });
+
+        // Générer le premier exercice au chargement
+        window.onload = generateExercise;
+    </script>
+	<script>
+		var rel1=document.getElementById("rel1");
+		rel1.addEventListener("click",relo);
+		function relo(){
+		location.reload();
+		}
+	</script>
+</body>
+</html>

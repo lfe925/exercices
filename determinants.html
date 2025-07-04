@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Exercice : Identifier les Déterminants</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background: #f9f9fc;
+      color: #333;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    #phrase {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    .word {
+      margin: 0 5px;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .word:hover {
+      background-color: #dfe6e9;
+    }
+    .correct {
+      background-color: #55efc4;
+    }
+    .incorrect {
+      background-color: #ff7675;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #feedback {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Repère les déterminants !</h1>
+  <p>Clique sur les mots qui sont des déterminants.</p>
+  <div id="phrase"></div>
+  <button onclick="generateSentence()">Nouvelle phrase</button>
+  <div id="feedback"></div>
+
+  <script>
+    const determiners = [
+      "un", "une", "de", "d’", "le", "la", "l’", "les", "au", "du", "aux", "des",
+      "quelques", "aucun", "nul", "certains", "divers", "différents",
+      "ce", "cet", "cette", "ces",
+      "ma", "ta", "sa", "mon", "ton", "son", "notre", "votre", "leur",
+      "mes", "tes", "ses", "nos", "vos", "leurs",
+      "deux", "trente", "dix-sept", "quatre-vingts", "trois-mille-trente-et-un",
+      "lequel", "laquelle", "lesquels", "lesquelles"
+    ];
+
+    const nouns = [
+      { word: "ami", gender: "m", startsWithVowel: true },
+      { word: "amie", gender: "f", startsWithVowel: true },
+      { word: "chien", gender: "m", startsWithVowel: false },
+      { word: "chatte", gender: "f", startsWithVowel: false },
+      { word: "école", gender: "f", startsWithVowel: true },
+      { word: "hôtel", gender: "m", startsWithVowel: true },
+      { word: "voiture", gender: "f", startsWithVowel: false },
+      { word: "enfant", gender: "m", startsWithVowel: true },
+      { word: "fleur", gender: "f", startsWithVowel: false },
+      { word: "oiseau", gender: "m", startsWithVowel: true }
+    ];
+
+    const adjectives = ["grand", "petit", "joli", "vieux", "nouveau", "bleu", "rapide"];
+    const verbs = ["aime", "regarde", "trouve", "porte", "ouvre", "cherche"];
+
+    let currentWords = [];
+
+    function getRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function startsWithVowelSound(word) {
+      return /^[aeiouéhà]/i.test(word);
+    }
+
+    function generateCorrectDeterminer(nounObj) {
+      // Choix intelligent : déterminants compatibles avec genre/nombre
+      let options = [];
+
+      const isVowel = nounObj.startsWithVowel;
+
+      // Quelques déterminants bien formés selon le nom
+      if (nounObj.gender === "m") {
+        options.push("le", "un", "mon", "ton", "son", "ce", "au", "du");
+        if (isVowel) options.push("l’", "cet");
+      } else {
+        options.push("la", "une", "ma", "ta", "sa", "cette");
+        if (isVowel) options.push("l’");
+      }
+
+      options.push("quelques", "aucun", "certains", "des");
+
+      return getRandom(options);
+    }
+
+    function generateSentence() {
+      const phraseContainer = document.getElementById("phrase");
+      const feedback = document.getElementById("feedback");
+      phraseContainer.innerHTML = "";
+      feedback.textContent = "";
+
+      const noun = getRandom(nouns);
+      const determiner = generateCorrectDeterminer(noun);
+      const adj = getRandom(adjectives);
+      const verb = getRandom(verbs);
+      const noun2 = getRandom(nouns);
+
+      // Créer phrase sous forme de tableau d’objets
+      const sentence = [
+        { text: determiner, isDeterminer: true },
+        { text: adj, isDeterminer: false },
+        { text: noun.word, isDeterminer: false },
+        { text: verb, isDeterminer: false },
+        { text: generateCorrectDeterminer(noun2), isDeterminer: true },
+        { text: noun2.word, isDeterminer: false }
+      ];
+
+      // Vérifie qu’il y a au moins un déterminant dans la phrase
+      if (!sentence.some(w => w.isDeterminer)) {
+        generateSentence(); // relancer si aucun déterminant
+        return;
+      }
+
+      currentWords = sentence.map(word => ({
+        ...word,
+        clicked: false
+      }));
+
+      sentence.forEach((w, i) => {
+        const span = document.createElement("span");
+        span.textContent = w.text;
+        span.className = "word";
+        span.onclick = () => checkWord(i, span);
+        phraseContainer.appendChild(span);
+      });
+    }
+
+    function checkWord(index, span) {
+      const word = currentWords[index];
+      if (word.clicked) return;
+      word.clicked = true;
+
+      if (word.isDeterminer) {
+        span.classList.add("correct");
+      } else {
+        span.classList.add("incorrect");
+      }
+
+      if (currentWords.every(w => w.clicked)) {
+        const correct = currentWords.filter(w => w.isDeterminer && w.clicked).length;
+        const total = currentWords.filter(w => w.isDeterminer).length;
+        document.getElementById("feedback").textContent =
+          `Tu as trouvé ${correct} déterminant(s) sur ${total}.`;
+      }
+    }
+
+    // Initialisation
+    generateSentence();
+  </script>
+</body>
+</html>
