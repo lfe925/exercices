@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu de Navigation</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --text-color: #333;
+            --light-color: #f8f9fa;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .menu-container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .menu-item {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            perspective: 1000px;
+        }
+
+        .menu-btn {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: var(--transition);
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .menu-item:hover .menu-btn {
+            transform: rotateY(180deg);
+        }
+
+        .menu-btn-front, .menu-btn-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .menu-btn-front {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .menu-btn-back {
+            background-color: white;
+            color: var(--text-color);
+            transform: rotateY(180deg);
+            border: 2px solid var(--primary-color);
+        }
+
+        .menu-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .menu-btn-front h3 {
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .menu-btn-back p {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .back-btn {
+            padding: 8px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .back-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .menu {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .menu-item {
+                width: 250px;
+                height: 120px;
+            }
+            
+            .menu-btn-front, .menu-btn-back {
+                flex-direction: row;
+                justify-content: space-around;
+                text-align: left;
+            }
+            
+            .menu-icon {
+                margin-bottom: 0;
+                font-size: 2rem;
+            }
+            
+            .menu-btn-front h3 {
+                font-size: 1.1rem;
+            }
+            
+            .menu-btn-back p {
+                display: none;
+            }
+            
+            .menu-item:hover .menu-btn {
+                transform: rotateY(0);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="menu-container">
+        <div class="header">
+            <h1>Grammaire Française</h1>
+            <p>Sélectionnez une catégorie à explorer</p>
+        </div>
+        
+        <div class="menu">
+            <div class="menu-item">
+                <div class="menu-btn">
+                    <div class="menu-btn-front">
+                        <i class="fas fa-adjust menu-icon"></i>
+                        <h3>Adjectifs</h3>
+                    </div>
+                    <div class="menu-btn-back">
+                        <p>Explorez les règles d'accord et d'utilisation des adjectifs en français</p>
+                        <button class="back-btn" onclick="window.location.href='adjectifs.html'">Voir la leçon</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-btn">
+                    <div class="menu-btn-front">
+                        <i class="fas fa-link menu-icon"></i>
+                        <h3>Accords</h3>
+                    </div>
+                    <div class="menu-btn-back">
+                        <p>Maîtrisez les règles d'accord entre les différents éléments de la phrase</p>
+                        <button class="back-btn" onclick="window.location.href='accords.html'">Voir la leçon</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-btn">
+                    <div class="menu-btn-front">
+                        <i class="fas fa-puzzle-piece menu-icon"></i>
+                        <h3>Déterminants</h3>
+                    </div>
+                    <div class="menu-btn-back">
+                        <p>Découvrez les différents types de déterminants et leur utilisation</p>
+                        <button class="back-btn" onclick="window.location.href='determinants.html'">Voir la leçon</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add animation when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuItems = document.querySelectorAll('.menu-item');
+            
+            menuItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = `opacity 0.5s ease ${index * 0.1}s, transform 0.5s ease ${index * 0.1}s`;
+                
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100);
+            });
+            
+            // Add ripple effect to buttons
+            const buttons = document.querySelectorAll('.back-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const x = e.clientX - e.target.getBoundingClientRect().left;
+                    const y = e.clientY - e.target.getBoundingClientRect().top;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.className = 'ripple';
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                        window.location.href = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    }, 500);
+                });
+            });
+        });
+
+        // Add styles for ripple effect
+        const style = document.createElement('style');
+        style.textContent = `
+            .back-btn {
+                position: relative;
+                overflow: hidden;
+            }
+            .ripple {
+                position: absolute;
+                background-color: rgba(255, 255, 255, 0.7);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+                width: 20px;
+                height: 20px;
+                margin-left: -10px;
+                margin-top: -10px;
+            }
+            @keyframes ripple {
+                to {
+                    transform: scale(10);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
